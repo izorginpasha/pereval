@@ -1,7 +1,9 @@
- # Импортируем FastAPI для создания веб-приложения
+# Импортируем FastAPI для создания веб-приложения
 import uvicorn
 from src.core.config import uvicorn_options
-from fastapi import APIRouter ,FastAPI
+from fastapi import APIRouter, FastAPI
+from sqlalchemy import text
+from db.db import db_dependency
 
 router = APIRouter()
 
@@ -10,6 +12,15 @@ router = APIRouter()
 @router.get("/path")
 def my_get_func():
     pass
+
+
+@router.get('/ping')
+async def ping(db: db_dependency):
+    try:
+        await db.execute(text("SELECT 1"))
+        return True
+    except Exception:
+        return False
 
 
 @router.post("/path")
@@ -25,7 +36,6 @@ def my_put_func():
 @router.delete("/path")
 def my_delete_func():
     pass
-
 
 
 app = FastAPI(
