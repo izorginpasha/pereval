@@ -1,7 +1,9 @@
-from pydantic import BaseModel, validator, HttpUrl
+from pydantic import BaseModel, validator, HttpUrl,EmailStr
 from typing import Optional, List
 from datetime import datetime
 import re
+import base64
+
 
 class Coord(BaseModel):
     latitude: float
@@ -20,39 +22,47 @@ class Image(BaseModel):
     data: str  # Может быть base64 или URL
     title: str
 
-    @validator("data")
-    def validate_data(cls, value):
-        """Проверяет, является ли `data` валидным base64 или URL"""
-        if cls.is_valid_base64(value) or cls.is_valid_url(value):
-            return value
-        raise ValueError("data должно быть либо валидным base64, либо URL")
+    @validator('data')
+    def validate_image_data(cls, value):
+        # Проверка на base64 строку с префиксом
+        base64_pattern = re.compile(r"^data:image\/(?:png|jpg|jpeg|gif|webp);base64,([A-Za-z0-9+/=]+)$")
 
-    @staticmethod
-    def is_valid_base64(s: str) -> bool:
-        """Проверяет, является ли строка валидной base64"""
-        try:
-            # Длина должна быть кратна 4
-            if len(s) % 4 != 0:
-                return False
-            # Попытка декодирования
-            base64.b64decode(s, validate=True)
-            return True
-        except Exception:
-            return False
+        base64_match = base64_pattern.match(value)
+        if base64_match:
+            value = base64_match.group(1)  # Убираем префикс, если он был
 
-    @staticmethod
-    def is_valid_url(s: str) -> bool:
-        """Проверяет, является ли строка валидным URL (изображение)"""
-        url_pattern = re.compile(r"^https?://.+\.(jpg|jpeg|png|gif|webp)$", re.IGNORECASE)
-        return bool(url_pattern.match(s))
+            # Исправление padding (добавление нужного количества символов '=')
+            padding_needed = len(value) % 4
+            if padding_needed != 0:
+                value += "=" * (4 - padding_needed)
+
+            # Проверка на корректность base64 (попытка декодировать)
+            try:
+                decoded_value = base64.b64decode(value)
+                if len(decoded_value) == 0:
+                    raise ValueError("Декодированное изображение пустое.")
+            except Exception as e:
+                raise ValueError(f"Некорректная base64 строка: {str(e)}")
+
+            return value  # Если это корректный base64, возвращаем его
+
+        # Если строка не соответствует base64
+        raise ValueError("data должно быть валидным base64")
 
 
 class User(BaseModel):
-    email: str
+    email: EmailStr
     fam: str
     name: str
     otc: str
     phone: str
+
+    @validator('email')
+    def validate_email_domain(cls, v):
+        # Пример дополнительной проверки на домен
+        if not v.endswith('@example.com'):
+            raise ValueError('Email должен быть с доменом @example.com')
+        return v
 
 
 class PerevalCreate(BaseModel):
