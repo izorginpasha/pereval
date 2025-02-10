@@ -34,10 +34,7 @@ class PerevalAdded(Base):
     coord = relationship("Coords")
 
     # Уровень сложности в разные сезоны
-    level_winter = Column(Text)
-    level_summer = Column(Text)
-    level_autumn = Column(Text)
-    level_spring = Column(Text)
+    level = relationship("PerevalLevels", back_populates="pereval", cascade="all, delete, delete-orphan")
     # Связь с изображениями
     images = relationship("PerevalImages", back_populates="pereval", cascade="all, delete, delete-orphan")
 
@@ -50,3 +47,15 @@ class PerevalImages(Base):
     img = Column(LargeBinary, nullable=False)
     pereval_id = Column(Integer, ForeignKey("pereval_added.id"))
     pereval = relationship("PerevalAdded", back_populates="images")
+
+class PerevalLevels(Base):
+    __tablename__ = "pereval_levels"
+    id = Column(Integer, primary_key=True)
+    level_winter = Column(Text)
+    level_summer = Column(Text)
+    level_autumn = Column(Text)
+    level_spring = Column(Text)
+    pereval_id = Column(Integer, ForeignKey("pereval_added.id"))
+    pereval = relationship("PerevalAdded", back_populates="level")
+
+
