@@ -54,7 +54,7 @@ class PerevalImages(Base):
     __tablename__ = "pereval_images"
     id = Column(Integer, primary_key=True, index=True)
     date_added = Column(TIMESTAMP, default=func.now())
-    img = Column(LargeBinary, nullable=False)
+    img = Column(Text, nullable=False)
     pereval_id = Column(Integer, ForeignKey("pereval_added.id"))
     pereval = relationship("PerevalAdded", back_populates="images")
 

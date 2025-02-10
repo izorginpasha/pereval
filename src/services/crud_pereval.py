@@ -3,8 +3,8 @@ from db.db import db_dependency
 from models.pereval import PerevalAdded
 from models.users import Users
 from datetime import datetime
-from models.pereval import PerevalAdded, PerevalImages, Coords
-from schemas.pereval import PerevalCreate, ResponseMessage,User,Image,Coord,Level
+from models.pereval import PerevalAdded, PerevalImages, Coords, PerevalLevels
+from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level
 import base64
 import uuid
 from fastapi import HTTPException
@@ -18,6 +18,12 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
         await db.commit()
         await db.refresh(db_coords)
 
+        # Сохранение сложности
+        db_levels = PerevalLevels(**pereval.level.dict())
+        db.add(db_levels)
+        await db.commit()
+        await db.refresh(db_levels)
+
         # Создание перевала
         db_pereval = PerevalAdded(
             beautyTitle=pereval.beauty_title,
@@ -27,10 +33,8 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
             add_time=pereval.add_time.replace(tzinfo=None),  # Убираем временную зону
             status="new",
             coord_id=db_coords.id,
-            level_winter=pereval.level.winter,
-            level_summer=pereval.level.summer,
-            level_autumn=pereval.level.autumn,
-            level_spring=pereval.level.spring,
+            level_id=db_levels.id,
+
         )
         db.add(db_pereval)
         await db.commit()
@@ -38,14 +42,7 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
 
         # Добавление изображений
         for image in pereval.images:
-            # Декодируем изображение из base64
-            try:
-                image_data = base64.b64decode(image.data, validate=True)
-            except Exception as e:
-                raise HTTPException(status_code=400, detail=f"Ошибка при декодировании изображения: {e}")
-
-            # Сохраняем изображение в таблице
-            db_image = PerevalImages(pereval_id=db_pereval.id, img=image_data)
+            db_image = PerevalImages(pereval_id=db_pereval.id, img=image.data)
             db.add(db_image)
 
         await db.commit()
@@ -56,4 +53,3 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
     except Exception as e:
         # В случае ошибки в процессе работы с базой данных
         return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
-
