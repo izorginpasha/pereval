@@ -42,14 +42,6 @@ class PerevalAdded(Base):
     images = relationship("PerevalImages", back_populates="pereval", cascade="all, delete, delete-orphan")
 
 
-# Модель для перевалов по районам
-class PerevalAreas(Base):
-    __tablename__ = "pereval_areas"
-    id = Column(Integer, primary_key=True, index=True)
-    id_parent = Column(Integer, nullable=False)
-    title = Column(Text)
-
-
 # Модель для изображений перевалов
 class PerevalImages(Base):
     __tablename__ = "pereval_images"
@@ -58,10 +50,3 @@ class PerevalImages(Base):
     img = Column(LargeBinary, nullable=False)
     pereval_id = Column(Integer, ForeignKey("pereval_added.id"))
     pereval = relationship("PerevalAdded", back_populates="images")
-
-
-# Модель для типов активностей
-class SprActivitiesTypes(Base):
-    __tablename__ = "spr_activities_types"
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(Text)
