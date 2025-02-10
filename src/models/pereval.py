@@ -16,6 +16,15 @@ class Coords(Base):
     longitude = Column(Float)
     height = Column(Integer)
 
+# Модель сложности
+
+class PerevalLevels(Base):
+    __tablename__ = "pereval_levels"
+    id = Column(Integer, primary_key=True)
+    level_winter = Column(Text)
+    level_summer = Column(Text)
+    level_autumn = Column(Text)
+    level_spring = Column(Text)
 
 # Модель для перевалов
 class PerevalAdded(Base):
@@ -33,8 +42,9 @@ class PerevalAdded(Base):
     coord_id = Column(Integer, ForeignKey("coords.id"))
     coord = relationship("Coords")
 
-    # Уровень сложности в разные сезоны
-    level = relationship("PerevalLevels", back_populates="pereval", cascade="all, delete, delete-orphan")
+    # Связь с таблицей уровень сложности в разные сезоны
+    level_id = Column(Integer, ForeignKey("pereval_levels.id"))
+    level = relationship("PerevalLevels")
     # Связь с изображениями
     images = relationship("PerevalImages", back_populates="pereval", cascade="all, delete, delete-orphan")
 
@@ -48,14 +58,7 @@ class PerevalImages(Base):
     pereval_id = Column(Integer, ForeignKey("pereval_added.id"))
     pereval = relationship("PerevalAdded", back_populates="images")
 
-class PerevalLevels(Base):
-    __tablename__ = "pereval_levels"
-    id = Column(Integer, primary_key=True)
-    level_winter = Column(Text)
-    level_summer = Column(Text)
-    level_autumn = Column(Text)
-    level_spring = Column(Text)
-    pereval_id = Column(Integer, ForeignKey("pereval_added.id"))
-    pereval = relationship("PerevalAdded", back_populates="level")
+
+
 
 
