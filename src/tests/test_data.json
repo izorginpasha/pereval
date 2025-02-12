@@ -1,0 +1,54 @@
+{
+  "valid_pereval": {
+    "beauty_title": "string",
+    "title": "string",
+    "other_titles": "string",
+    "connect": "string",
+    "add_time": "2025-02-12T05:41:40.748Z",
+    "user": {
+      "email": "user@example.com",
+      "fam": "string",
+      "name": "string",
+      "otc": "string",
+      "phone": "string"
+    },
+    "coords": {
+      "latitude": 0,
+      "longitude": 0,
+      "height": 0
+    },
+    "level": {
+      "level_winter": "string",
+      "level_summer": "string",
+      "level_autumn": "string",
+      "level_spring": "string"
+    },
+    "images": [
+      {
+        "data": "https://lookw.net/9/949/1566941551-1920h1080.-winter-patterns-1-16.jpg",
+        "title": "string"
+      }
+    ]
+  },
+  "invalid_pereval": {
+    "beauty_title": "",
+    "title": "",
+    "other_titles": "",
+    "connect": "",
+    "add_time": "",
+    "user": {
+      "email": "invalid-email",
+      "fam": "",
+      "name": "",
+      "otc": "",
+      "phone": ""
+    },
+    "coords": {
+      "latitude": null,
+      "longitude": null,
+      "height": null
+    },
+    "level": {},
+    "images": []
+  }
+}
