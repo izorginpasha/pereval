@@ -40,6 +40,7 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
             status="new",
             coord_id=db_coords.id,
             level_id=db_levels.id,
+            user_id=db_users.id,
 
         )
         db.add(db_pereval)
