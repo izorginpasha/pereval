@@ -4,11 +4,12 @@ from models.pereval import PerevalAdded
 from models.users import Users
 from datetime import datetime
 from models.pereval import PerevalAdded, PerevalImages, Coords, PerevalLevels
-from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level
+from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level, PerevalResponse
 import base64
 import uuid
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
+
 
 async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseMessage:
     try:
@@ -42,8 +43,6 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
 
                 raise e  # Пробрасываем ошибку дальше, если не уникальность
 
-
-
         # Создание перевала
         db_pereval = PerevalAdded(
             beautyTitle=pereval.beauty_title,
@@ -73,4 +72,25 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
 
     except Exception as e:
         # В случае ошибки в процессе работы с базой данных
+        return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
+
+
+async def get_pereval(db: db_dependency, pereval_id: int):
+    try:
+        stmt = select(PerevalAdded).where(PerevalAdded.id == pereval_id)
+        result = await db.execute(stmt)
+        pereval = result.scalars().first()
+
+        if not pereval:
+            return ResponseMessage(status=404, message="Перевал не найден", id=None)
+
+        # Преобразуем объект в словарь
+        pereval_dict = {column.name: getattr(pereval, column.name) for column in PerevalAdded.__table__.columns}
+
+
+
+        return pereval_dict
+
+
+    except Exception as e:
         return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)

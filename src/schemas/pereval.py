@@ -5,6 +5,7 @@ import re
 import base64
 from urllib.parse import urlparse
 
+
 class Coord(BaseModel):
     latitude: float
     longitude: float
@@ -39,7 +40,6 @@ class User(BaseModel):
     phone: str
 
 
-
 class PerevalCreate(BaseModel):
     beauty_title: str
     title: str
@@ -53,6 +53,23 @@ class PerevalCreate(BaseModel):
 
 
 class ResponseMessage(BaseModel):
-    status: int
+    status: str
     message: Optional[str] = None
     id: Optional[int] = None
+
+
+class PerevalResponse(BaseModel):
+    id: int
+    date_added: datetime
+    beautyTitle: str
+    title: str
+    other_titles: str
+    connect: str
+    add_time: datetime
+    status: str
+    user_id: Optional[int]
+    coord_id: int
+    level_id: int
+
+    class Config:
+        orm_mode = True
