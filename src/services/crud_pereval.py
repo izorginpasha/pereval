@@ -8,7 +8,7 @@ from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, 
 import base64
 import uuid
 from fastapi import HTTPException
-
+from sqlalchemy.exc import IntegrityError
 
 async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseMessage:
     try:
@@ -25,10 +25,24 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
         await db.refresh(db_levels)
 
         # Сохранение user
-        db_users = Users(**pereval.user.dict())
-        db.add(db_users)
-        await db.commit()
-        await db.refresh(db_users)
+        # Проверка на существующего пользователя по email
+        stmt = select(Users).filter_by(email=pereval.user.email)
+        result = await db.execute(stmt)
+        db_user = result.scalars().first()
+
+        # Если пользователь не найден, создаем нового
+        if not db_user:
+            try:
+                db_users = Users(**pereval.user.dict())
+                db.add(db_users)
+                await db.commit()
+                await db.refresh(db_users)
+                db_user = db_users  # Записываем нового пользователя
+            except IntegrityError as e:
+
+                raise e  # Пробрасываем ошибку дальше, если не уникальность
+
+
 
         # Создание перевала
         db_pereval = PerevalAdded(
@@ -40,7 +54,7 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
             status="new",
             coord_id=db_coords.id,
             level_id=db_levels.id,
-            user_id=db_users.id,
+            user_id=db_user.id,
 
         )
         db.add(db_pereval)
