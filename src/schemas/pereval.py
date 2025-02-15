@@ -38,12 +38,6 @@ class User(BaseModel):
     otc: str
     phone: str
 
-    @validator('email')
-    def validate_email_domain(cls, v):
-        # Пример дополнительной проверки на домен
-        if not v.endswith('@example.com'):
-            raise ValueError('Email должен быть с доменом @example.com')
-        return v
 
 
 class PerevalCreate(BaseModel):

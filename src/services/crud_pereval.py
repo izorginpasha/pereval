@@ -24,6 +24,12 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
         await db.commit()
         await db.refresh(db_levels)
 
+        # Сохранение user
+        db_users = Users(**pereval.user.dict())
+        db.add(db_users)
+        await db.commit()
+        await db.refresh(db_users)
+
         # Создание перевала
         db_pereval = PerevalAdded(
             beautyTitle=pereval.beauty_title,

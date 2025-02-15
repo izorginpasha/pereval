@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship
 from .base import Base
 import enum
 from sqlalchemy.dialects.postgresql import ENUM
+from .users import Users
+
 
 status_enum = ENUM('new', 'pending', 'accepted', 'rejected', name='statusnum', create_type=True)
 
@@ -37,6 +39,10 @@ class PerevalAdded(Base):
     connect = Column(Text)
     add_time = Column(TIMESTAMP)
     status = Column(status_enum, default="new")
+
+    # Связь с таблицей users
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("Users")
 
     # Связь с таблицей координат
     coord_id = Column(Integer, ForeignKey("coords.id"))
