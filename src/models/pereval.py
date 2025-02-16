@@ -28,7 +28,33 @@ class PerevalLevels(Base):
     level_autumn = Column(Text)
     level_spring = Column(Text)
 
-d
+# Модель для перевалов
+class PerevalAdded(Base):
+    __tablename__ = "pereval_added"
+    id = Column(Integer, primary_key=True, index=True)
+    date_added = Column(TIMESTAMP, default=func.now())
+    beautyTitle = Column(Text)
+    title = Column(Text)
+    other_titles = Column(Text)
+    connect = Column(Text)
+    add_time = Column(TIMESTAMP)
+    status = Column(status_enum, default="new")
+
+    # Связь с таблицей users
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("Users")
+
+    # Связь с таблицей координат
+    coord_id = Column(Integer, ForeignKey("coords.id"))
+    coord = relationship("Coords")
+
+    # Связь с таблицей уровень сложности в разные сезоны
+    level_id = Column(Integer, ForeignKey("pereval_levels.id"))
+    level = relationship("PerevalLevels")
+    # Связь с изображениями
+    images = relationship("PerevalImages", back_populates="pereval", cascade="all, delete, delete-orphan")
+
+
 # Модель для изображений перевалов
 class PerevalImages(Base):
     __tablename__ = "pereval_images"

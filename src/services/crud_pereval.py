@@ -9,6 +9,7 @@ import base64
 import uuid
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
 
 async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseMessage:
@@ -77,26 +78,36 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
 
 async def get_pereval(db: db_dependency, pereval_id: int):
     try:
-        result = await db.execute(select(PerevalAdded).filter(PerevalAdded.id == pereval_id))
-        print(result)
-        pereval = result.scalars().all()
-        print(pereval)
-        pereval_obj = pereval[0]  # Берем первый объект из списка
-        print(pereval_obj.id, pereval_obj.title, pereval_obj.status)
-        pereval_dict = {column.name: getattr(pereval_obj, column.name) for column in PerevalAdded.__table__.columns}
-        print(pereval_dict)
-        if not pereval:
-            raise HTTPException(status_code=404, detail="Перевал не найден")
-
-            # Конвертация объекта SQLAlchemy в словарь
-        return {
-
-            "user": {
-                "id": pereval.user.id,
-                "name": pereval.user.name,
-                "email": pereval.user.email,
-            } if pereval.user else None
-        }
+        result = await db.execute(
+            select(PerevalAdded)
+            .options(selectinload(PerevalAdded.user))  # Подгружаем пользователя
+            .filter(PerevalAdded.id == pereval_id)
+        )
+        pereval = result.scalars().first()
+        if pereval:
+            return {
+                "id": pereval.id,
+                "date_added": pereval.date_added,
+                "beautyTitle": pereval.beautyTitle,
+                "title": pereval.title,
+                "other_titles": pereval.other_titles,
+                "connect": pereval.connect,
+                "add_time": pereval.add_time,
+                "status": pereval.status,
+                "user_id": pereval.user_id,
+                "coord_id": pereval.coord_id,
+                "level_id": pereval.level_id,
+                "user": {
+                    "id": pereval.user.id,  # Добавляем id пользователя
+                    "name": pereval.user.name,
+                    "fam": pereval.user.fam,
+                    "otc": pereval.user.otc,
+                    "email": pereval.user.email,
+                    "phone": pereval.user.phone,
+                },
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Pereval not found")
 
     except Exception as e:
         return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
