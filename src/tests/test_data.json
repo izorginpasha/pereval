@@ -50,5 +50,26 @@
     },
     "level": {},
     "images": []
+  },
+  "valid_pereval_id": {
+    "id": 23,
+    "date_added": "2025-02-15T17:14:27.746214",
+    "beautyTitle": "string",
+    "title": "string",
+    "other_titles": "string",
+    "connect": "string",
+    "add_time": "2025-02-15T11:39:49.833000",
+    "status": "new",
+    "user_id": 1,
+    "coord_id": 44,
+    "level_id": 42,
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "fam": "string",
+      "name": "string",
+      "otc": "string",
+      "phone": "string"
+    }
   }
 }
