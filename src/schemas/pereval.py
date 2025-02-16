@@ -33,6 +33,7 @@ class Image(BaseModel):
 
 
 class User(BaseModel):
+    id: int
     email: EmailStr
     fam: str
     name: str
@@ -53,7 +54,7 @@ class PerevalCreate(BaseModel):
 
 
 class ResponseMessage(BaseModel):
-    status: str
+    status: int
     message: Optional[str] = None
     id: Optional[int] = None
 
@@ -70,6 +71,7 @@ class PerevalResponse(BaseModel):
     user_id: Optional[int]
     coord_id: int
     level_id: int
+    user: Optional[User]  # Теперь добавляем данные пользователя
 
     class Config:
         orm_mode = True

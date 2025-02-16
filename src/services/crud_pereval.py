@@ -77,20 +77,26 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
 
 async def get_pereval(db: db_dependency, pereval_id: int):
     try:
-        stmt = select(PerevalAdded).where(PerevalAdded.id == pereval_id)
-        result = await db.execute(stmt)
-        pereval = result.scalars().first()
-
+        result = await db.execute(select(PerevalAdded).filter(PerevalAdded.id == pereval_id))
+        print(result)
+        pereval = result.scalars().all()
+        print(pereval)
+        pereval_obj = pereval[0]  # Берем первый объект из списка
+        print(pereval_obj.id, pereval_obj.title, pereval_obj.status)
+        pereval_dict = {column.name: getattr(pereval_obj, column.name) for column in PerevalAdded.__table__.columns}
+        print(pereval_dict)
         if not pereval:
-            return ResponseMessage(status=404, message="Перевал не найден", id=None)
+            raise HTTPException(status_code=404, detail="Перевал не найден")
 
-        # Преобразуем объект в словарь
-        pereval_dict = {column.name: getattr(pereval, column.name) for column in PerevalAdded.__table__.columns}
+            # Конвертация объекта SQLAlchemy в словарь
+        return {
 
-
-
-        return pereval_dict
-
+            "user": {
+                "id": pereval.user.id,
+                "name": pereval.user.name,
+                "email": pereval.user.email,
+            } if pereval.user else None
+        }
 
     except Exception as e:
         return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
