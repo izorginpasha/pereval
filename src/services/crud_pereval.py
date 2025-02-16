@@ -4,7 +4,7 @@ from models.pereval import PerevalAdded
 from models.users import Users
 from datetime import datetime
 from models.pereval import PerevalAdded, PerevalImages, Coords, PerevalLevels
-from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level, PerevalResponse
+from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level, PerevalResponse,PerevalUpdate
 import base64
 import uuid
 from fastapi import HTTPException
@@ -111,3 +111,33 @@ async def get_pereval(db: db_dependency, pereval_id: int):
 
     except Exception as e:
         return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
+
+
+async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpdate) -> PerevalAdded:
+    try:
+        db_pereval = await get_pereval(db, pereval_id)
+
+        if db_pereval:
+            if pereval.status == "new":
+                # Обновление данных
+                for key, value in pereval.dict(exclude_unset=True).items():
+                    setattr(db_pereval, key, value)
+
+                # Сохранение изменений
+                await db.commit()
+                await db.refresh(db_pereval)
+                return ResponseMessage(status=1, message="успешно")
+            else:
+                return ResponseMessage(status=0, message="status no new")
+        else:
+            return ResponseMessage(status=0, message="Нет записи с таким id")
+    except Exception as e:
+        return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
+
+
+
+
+
+
+
+

@@ -75,3 +75,14 @@ class PerevalResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PerevalUpdate(BaseModel):
+    beauty_title: str
+    title: str
+    other_titles: Optional[str] = None
+    connect: Optional[str] = None
+    add_time: datetime
+    coords: Coord
+    level: Level
+    images: List[Image]
