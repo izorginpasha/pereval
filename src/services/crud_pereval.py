@@ -4,7 +4,7 @@ from models.pereval import PerevalAdded
 from models.users import Users
 from datetime import datetime
 from models.pereval import PerevalAdded, PerevalImages, Coords, PerevalLevels
-from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level, PerevalResponse,PerevalUpdate
+from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level, PerevalResponse, PerevalUpdate
 import base64
 import uuid
 from fastapi import HTTPException
@@ -57,16 +57,13 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
             user_id=db_user.id,
 
         )
-        db.add(db_pereval)
         await db.commit()
         await db.refresh(db_pereval)
 
-        # Добавление изображений
-        for image in pereval.images:
-            db_image = PerevalImages(pereval_id=db_pereval.id, img=image.data)
-            db.add(db_image)
-
-        await db.commit()
+        # # Добавление изображений
+        # for image in pereval.images:
+        #     db_image = PerevalImages(pereval_id=db_pereval.id, img=image.data)
+        #     db.add(db_image)
 
         # Ответ с успехом
         return ResponseMessage(status=200, message="Отправлено успешно", id=db_pereval.id)
@@ -85,27 +82,7 @@ async def get_pereval(db: db_dependency, pereval_id: int):
         )
         pereval = result.scalars().first()
         if pereval:
-            return {
-                "id": pereval.id,
-                "date_added": pereval.date_added,
-                "beautyTitle": pereval.beautyTitle,
-                "title": pereval.title,
-                "other_titles": pereval.other_titles,
-                "connect": pereval.connect,
-                "add_time": pereval.add_time,
-                "status": pereval.status,
-                "user_id": pereval.user_id,
-                "coord_id": pereval.coord_id,
-                "level_id": pereval.level_id,
-                "user": {
-                    "id": pereval.user.id,  # Добавляем id пользователя
-                    "name": pereval.user.name,
-                    "fam": pereval.user.fam,
-                    "otc": pereval.user.otc,
-                    "email": pereval.user.email,
-                    "phone": pereval.user.phone,
-                },
-            }
+            return pereval
         else:
             raise HTTPException(status_code=404, detail="Pereval not found")
 
@@ -113,31 +90,28 @@ async def get_pereval(db: db_dependency, pereval_id: int):
         return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
 
 
-async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpdate) -> PerevalAdded:
+async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpdate) -> ResponseMessage:
     try:
+        # Получаем ORM-объект из БД
         db_pereval = await get_pereval(db, pereval_id)
+        print(db_pereval)
 
-        if db_pereval:
-            if pereval.status == "new":
-                # Обновление данных
-                for key, value in pereval.dict(exclude_unset=True).items():
-                    setattr(db_pereval, key, value)
+        # Проверяем статус
+        if db_pereval.status != "new":
+            return ResponseMessage(status=0, message="Невозможно обновить, так как запись не в статусе 'new'.")
+        # Обновляем поля существующего объекта
+        db_pereval.beautyTitle = pereval.beauty_title
+        db_pereval.title = pereval.title
+        db_pereval.other_titles = pereval.other_titles
+        db_pereval.connect = pereval.connect
+        db_pereval.add_time = pereval.add_time.replace(tzinfo=None)  # Убираем временную зону
+        # Здесь можно добавлять и другие обновляемые поля
 
-                # Сохранение изменений
-                await db.commit()
-                await db.refresh(db_pereval)
-                return ResponseMessage(status=1, message="успешно")
-            else:
-                return ResponseMessage(status=0, message="status no new")
-        else:
-            return ResponseMessage(status=0, message="Нет записи с таким id")
+        # Сохраняем изменения в БД
+        await db.commit()
+        await db.refresh(db_pereval)
+
+        return ResponseMessage(status=1, message="Запись успешно обновлена.")
+
     except Exception as e:
-        return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
-
-
-
-
-
-
-
-
+        raise HTTPException(status_code=500, detail=f"Ошибка при обновлении записи: {str(e)}")

@@ -33,7 +33,7 @@ class Image(BaseModel):
 
 
 class User(BaseModel):
-    id: int
+
     email: EmailStr
     fam: str
     name: str
@@ -86,3 +86,7 @@ class PerevalUpdate(BaseModel):
     coords: Coord
     level: Level
     images: List[Image]
+
+
+    class Config:
+        orm_mode = True
