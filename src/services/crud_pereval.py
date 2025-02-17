@@ -10,7 +10,7 @@ import uuid
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
-
+from sqlalchemy.orm import joinedload
 
 async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseMessage:
     try:
@@ -60,10 +60,7 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
         await db.commit()
         await db.refresh(db_pereval)
 
-        # # Добавление изображений
-        # for image in pereval.images:
-        #     db_image = PerevalImages(pereval_id=db_pereval.id, img=image.data)
-        #     db.add(db_image)
+
 
         # Ответ с успехом
         return ResponseMessage(status=200, message="Отправлено успешно", id=db_pereval.id)
@@ -77,7 +74,10 @@ async def get_pereval(db: db_dependency, pereval_id: int):
     try:
         result = await db.execute(
             select(PerevalAdded)
-            .options(selectinload(PerevalAdded.user))  # Подгружаем пользователя
+            .options(joinedload(PerevalAdded.user))  # Подгружаем пользователя
+            .options(joinedload(PerevalAdded.coord))  # Подгружаем связанные координаты
+            .options(joinedload(PerevalAdded.level))  # Подгружаем связанные уровни
+            .options(joinedload(PerevalAdded.images))  # Подгружаем изображения
             .filter(PerevalAdded.id == pereval_id)
         )
         pereval = result.scalars().first()
@@ -87,7 +87,7 @@ async def get_pereval(db: db_dependency, pereval_id: int):
             raise HTTPException(status_code=404, detail="Pereval not found")
 
     except Exception as e:
-        return ResponseMessage(status=500, message=f"Ошибка подключения к базе данных: {str(e)}", id=None)
+        raise HTTPException(status_code=500, detail=f"Ошибка подключения к базе данных: {str(e)}")
 
 
 async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpdate) -> ResponseMessage:
@@ -95,6 +95,7 @@ async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpd
         # Получаем ORM-объект из БД
         db_pereval = await get_pereval(db, pereval_id)
         print(db_pereval)
+        print(db_pereval.coord.latitude)
 
         # Проверяем статус
         if db_pereval.status != "new":
@@ -105,13 +106,53 @@ async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpd
         db_pereval.other_titles = pereval.other_titles
         db_pereval.connect = pereval.connect
         db_pereval.add_time = pereval.add_time.replace(tzinfo=None)  # Убираем временную зону
-        # Здесь можно добавлять и другие обновляемые поля
+        # Обновляем связанные данные координат
+        if pereval.coords:  # Проверяем, что coords передан
+            db_pereval.coord.latitude = pereval.coords.latitude
+            db_pereval.coord.longitude = pereval.coords.longitude
+            db_pereval.coord.height = pereval.coords.height
 
+        # Обновляем связанные уровни
+        if pereval.level:
+            db_pereval.level.level_winter = pereval.level.level_winter
+            db_pereval.level.level_summer = pereval.level.level_summer
+            db_pereval.level.level_autumn = pereval.level.level_autumn
+            db_pereval.level.level_spring = pereval.level.level_spring
+
+        # Обновляем изображения, если они есть
+        if pereval.images:
+            db_pereval.images.clear()  # Очистим текущие изображения
+            for image in pereval.images:
+                db_pereval.images.append(PerevalImages(img=image.data))
         # Сохраняем изменения в БД
         await db.commit()
         await db.refresh(db_pereval)
 
         return ResponseMessage(status=1, message="Запись успешно обновлена.")
 
+
+    except IntegrityError as e:
+
+        # Если ошибка с уникальностью или другой ошибкой базы данных
+
+        raise HTTPException(status_code=0, detail="Ошибка базы данных: Нарушение целостности данных.")
+
+
+    except ValidationError as e:
+
+        # Если ошибка валидации данных Pydantic
+
+        raise HTTPException(status_code=0, detail="Некорректные данные. Проверьте ввод и повторите попытку.")
+    except ValidationError as e:
+
+        # Если ошибка валидации данных Pydantic
+
+        raise HTTPException(status_code=0, detail="Некорректные данные. Проверьте ввод и повторите попытку.")
+
+
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка при обновлении записи: {str(e)}")
+
+        # Обработка других ошибок, таких как проблемы с сервером или базой данных
+
+        raise HTTPException(status_code=0, detail=f"Ошибка при обновлении записи: {str(e)}")
