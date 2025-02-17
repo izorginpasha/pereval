@@ -131,28 +131,18 @@ async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpd
         return ResponseMessage(status=1, message="Запись успешно обновлена.")
 
 
-    except IntegrityError as e:
-
-        # Если ошибка с уникальностью или другой ошибкой базы данных
-
-        raise HTTPException(status_code=0, detail="Ошибка базы данных: Нарушение целостности данных.")
 
 
-    except ValidationError as e:
+    except IntegrityError:
 
-        # Если ошибка валидации данных Pydantic
+        return {"state": 0, "message": "Ошибка базы данных: Нарушение целостности данных."}
 
-        raise HTTPException(status_code=0, detail="Некорректные данные. Проверьте ввод и повторите попытку.")
-    except ValidationError as e:
 
-        # Если ошибка валидации данных Pydantic
+    except ValidationError:
 
-        raise HTTPException(status_code=0, detail="Некорректные данные. Проверьте ввод и повторите попытку.")
-
+        return {"state": 0, "message": "Некорректные данные. Проверьте ввод и повторите попытку."}
 
 
     except Exception as e:
 
-        # Обработка других ошибок, таких как проблемы с сервером или базой данных
-
-        raise HTTPException(status_code=0, detail=f"Ошибка при обновлении записи: {str(e)}")
+        return {"state": 0, "message": f"Ошибка при обновлении записи: {str(e)}"}

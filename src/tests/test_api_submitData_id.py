@@ -29,4 +29,4 @@ async def test_invalid_pereval_id():
     async with httpx.AsyncClient(base_url="http://localhost:8000") as ac:
         response = await ac.get("/submitData/-")  # Неверное значение
     assert response.status_code == 400
-    assert response.json() == {"detail": "Некорректные данные. Проверьте ввод и повторите попытку."}
+    assert response.json() == {"state": 0, "message": "Ошибка валидации JSON", "detail": "Некорректные данные. Проверьте ввод и повторите попытку."}
