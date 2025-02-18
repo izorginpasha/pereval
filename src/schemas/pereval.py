@@ -58,6 +58,12 @@ class ResponseMessage(BaseModel):
     message: Optional[str] = None
     id: Optional[int] = None
 
+class ResponseMessagePut(BaseModel):
+    state: int
+    message: Optional[str] = None
+    status: int
+
+
 
 class PerevalResponse(BaseModel):
     id: int

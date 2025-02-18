@@ -94,8 +94,11 @@ async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpd
     try:
         # Получаем ORM-объект из БД
         db_pereval = await get_pereval(db, pereval_id)
-        print(db_pereval)
-        print(db_pereval.coord.latitude)
+
+        # Проверяем, если запись не найдена
+        if db_pereval is None:
+            return ResponseMessagePut(state=0, message="Запись не найдена.", status=404)
+
 
         # Проверяем статус
         if db_pereval.status != "new":
