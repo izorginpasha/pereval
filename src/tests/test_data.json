@@ -95,5 +95,172 @@
         "title": "string"
       }
     ]
-  }
+  },
+  "valid_pereval_get_email": [
+    {
+      "id": 21,
+      "date_added": "2025-02-15T17:14:16.371527",
+      "beautyTitle": "string",
+      "title": "string",
+      "other_titles": "string",
+      "connect": "string",
+      "add_time": "2025-02-15T11:39:49.833000",
+      "status": "new",
+      "user": {
+        "email": "user@example.com",
+        "fam": "string",
+        "name": "string",
+        "otc": "string",
+        "phone": "string"
+      },
+      "coords": {
+        "latitude": 0,
+        "longitude": 0,
+        "height": 0
+      },
+      "level": {
+        "level_winter": "string",
+        "level_summer": "string",
+        "level_autumn": "string",
+        "level_spring": "string"
+      },
+      "images": [
+        {
+          "data": "https://s9.travelask.ru/uploads/post/000/028/766/main_image/facebook-3703d50448b0b279bd310d3d2ce9f03d.jpg"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "date_added": "2025-02-15T17:14:25.611798",
+      "beautyTitle": "string",
+      "title": "string",
+      "other_titles": "string",
+      "connect": "string",
+      "add_time": "2025-02-15T11:39:49.833000",
+      "status": "new",
+      "user": {
+        "email": "user@example.com",
+        "fam": "string",
+        "name": "string",
+        "otc": "string",
+        "phone": "string"
+      },
+      "coords": {
+        "latitude": 0,
+        "longitude": 0,
+        "height": 0
+      },
+      "level": {
+        "level_winter": "string",
+        "level_summer": "string",
+        "level_autumn": "string",
+        "level_spring": "string"
+      },
+      "images": [
+        {
+          "data": "https://s9.travelask.ru/uploads/post/000/028/766/main_image/facebook-3703d50448b0b279bd310d3d2ce9f03d.jpg"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "date_added": "2025-02-17T19:52:51.117926",
+      "beautyTitle": "string",
+      "title": "string",
+      "other_titles": "string",
+      "connect": "string",
+      "add_time": "2025-02-17T14:52:33.251000",
+      "status": "new",
+      "user": {
+        "email": "user@example.com",
+        "fam": "string",
+        "name": "string",
+        "otc": "string",
+        "phone": "string"
+      },
+      "coords": {
+        "latitude": 0,
+        "longitude": 0,
+        "height": 0
+      },
+      "level": {
+        "level_winter": "string",
+        "level_summer": "string",
+        "level_autumn": "string",
+        "level_spring": "string"
+      },
+      "images": [
+        {
+          "data": "https://s9.travelask.ru/uploads/post/000/028/766/main_image/facebook-3703d50448b0b279bd310d3d2ce9f03d.jpg"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "date_added": "2025-02-17T19:53:11.116889",
+      "beautyTitle": "string",
+      "title": "string",
+      "other_titles": "string",
+      "connect": "string",
+      "add_time": "2025-02-17T14:52:33.251000",
+      "status": "new",
+      "user": {
+        "email": "user@example.com",
+        "fam": "string",
+        "name": "string",
+        "otc": "string",
+        "phone": "string"
+      },
+      "coords": {
+        "latitude": 0,
+        "longitude": 0,
+        "height": 0
+      },
+      "level": {
+        "level_winter": "string",
+        "level_summer": "string",
+        "level_autumn": "string",
+        "level_spring": "string"
+      },
+      "images": [
+        {
+          "data": "https://s9.travelask.ru/uploads/post/000/028/766/main_image/facebook-3703d50448b0b279bd310d3d2ce9f03d.jpg"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "date_added": "2025-02-15T17:14:27.746214",
+      "beautyTitle": "string",
+      "title": "string",
+      "other_titles": "string",
+      "connect": "string",
+      "add_time": "2025-02-18T16:39:20.581000",
+      "status": "new",
+      "user": {
+        "email": "user@example.com",
+        "fam": "string",
+        "name": "string",
+        "otc": "string",
+        "phone": "string"
+      },
+      "coords": {
+        "latitude": 0,
+        "longitude": 0,
+        "height": 0
+      },
+      "level": {
+        "level_winter": "string",
+        "level_summer": "string",
+        "level_autumn": "string",
+        "level_spring": "string"
+      },
+      "images": [
+        {
+          "data": "https://s9.travelask.ru/uploads/post/000/028/766/main_image/facebook-3703d50448b0b279bd310d3d2ce9f03d.jpg"
+        }
+      ]
+    }
+  ]
 }
