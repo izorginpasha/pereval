@@ -21,7 +21,6 @@ class Level(BaseModel):
 
 class Image(BaseModel):
     data: str  # Может быть base64 или URL
-    title: str
 
     @validator('data')
     def validate_image_data(cls, value):
@@ -74,13 +73,13 @@ class PerevalResponse(BaseModel):
     connect: str
     add_time: datetime
     status: str
-    user_id: Optional[int]
-    coord_id: int
-    level_id: int
-    user: Optional[User]  # Теперь добавляем данные пользователя
+    user: User
+    coords: Coord
+    level: Level
+    images: List[Image]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class PerevalUpdate(BaseModel):

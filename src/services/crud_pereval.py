@@ -11,6 +11,8 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm import joinedload
+from typing import List
+from fastapi.responses import JSONResponse
 
 async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseMessage:
     try:
@@ -149,3 +151,63 @@ async def update_pereval(db: db_dependency, pereval_id: int, pereval: PerevalUpd
     except Exception as e:
 
         return {"state": 0, "message": f"Ошибка при обновлении записи: {str(e)}"}
+
+async def get_pereval_user_email(db: db_dependency, user__email: str) -> List[dict]:
+    try:
+        # Проверяем, существует ли пользователь с таким email
+        stmt_user = select(Users).filter(Users.email == user__email)
+        result_user = await db.execute(stmt_user)
+        db_user = result_user.scalars().first()
+
+        if not db_user:
+            raise HTTPException(status_code=404, detail="Пользователь с таким email не найден")
+
+        # Запрос на получение записей PerevalAdded, связанных с этим пользователем
+        stmt_perevals = (
+            select(PerevalAdded)
+            .options(joinedload(PerevalAdded.user))
+            .options(joinedload(PerevalAdded.coord))
+            .options(joinedload(PerevalAdded.level))
+            .options(joinedload(PerevalAdded.images))
+            .filter(PerevalAdded.user_id == db_user.id)
+        )
+
+        result_perevals = await db.execute(stmt_perevals)
+        perevals = result_perevals.unique().scalars().all()
+
+        if not perevals:
+            raise HTTPException(status_code=404, detail="Записи перевалов не найдены")
+
+        # Преобразуем ORM-модели в Pydantic-модели
+        response_data = []
+        for p in perevals:
+            coords = Coord(**p.coord.__dict__) if p.coord else None
+            level = Level(**p.level.__dict__) if p.level else None
+            user = User(**p.user.__dict__) if p.user else None
+            images = [Image(data=image.img) for image in p.images] if p.images else []
+
+            response_data.append(
+                PerevalResponse(
+                    id=p.id,
+                    date_added=p.date_added,
+                    beautyTitle=p.beautyTitle,
+                    title=p.title,
+                    other_titles=p.other_titles,
+                    connect=p.connect,
+                    add_time=p.add_time,
+                    status=p.status,
+                    user=user,
+                    coords=coords,
+                    level=level,
+                    images=images
+                )
+            )
+            print(response_data)
+            print([p.model_dump() for p in response_data])
+            json_data = [p.model_dump(mode='json') for p in response_data]
+
+        # Преобразуем Pydantic-объекты в JSON-совместимые словари
+        return JSONResponse(content=json_data)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка подключения к базе данных: {str(e)}")

@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException, APIRouter
+from fastapi import FastAPI, Depends, HTTPException, APIRouter, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.pereval import PerevalCreate, ResponseMessage, User, Image, Coord, Level, PerevalResponse,PerevalUpdate
-from services.crud_pereval import create_pereval, get_pereval, update_pereval
+from services.crud_pereval import create_pereval, get_pereval, update_pereval, get_pereval_user_email
 from db.db import db_dependency
 
 pereval_router = APIRouter(prefix="/submitData", tags=['submitData'])
@@ -26,3 +26,9 @@ async def update_existing_pereval(db: db_dependency,pereval_id: int, pereval: Pe
     if not updated_pereval:
         raise HTTPException(status_code=404, detail="Pereval not found")
     return updated_pereval
+
+@pereval_router.get("/", response_model=PerevalResponse)
+async def get_pereval_email(db: db_dependency, user__email: str = Query(...)):
+    print(user__email)
+    result = await get_pereval_user_email(db, user__email)
+    return result
