@@ -12,13 +12,16 @@ class InternalError(Exception):
 
 
 # Функция get_async_session используется для получения асинхронной сессии SQLAlchemy
+# Функция get_async_session используется для получения асинхронной сессии SQLAlchemy
 async def get_async_session() -> AsyncSession:
     async with async_session() as session:
         try:
             yield session
         except InternalError:
-            # в случае ошибки будет произведён откат транзакции
-            await session.rollback()
+            await session.rollback()  # Откат транзакции в случае ошибки
+            raise  # Пробрасывание ошибки дальше
+        finally:
+            await session.close()  # Гарантированное закрытие сессии после завершения работы
 
 
 # Функция create_sessionmaker создаёт фабрику сессий для асинхронной работы с базой данных

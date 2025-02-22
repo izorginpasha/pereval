@@ -78,6 +78,7 @@ class PerevalResponse(BaseModel):
     level: Level
     images: List[Image]
 
+
     class Config:
         from_attributes = True
 

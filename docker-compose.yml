@@ -11,6 +11,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "${FSTR_DB_PORT}:5432"
+    networks:
+      - app_network
 
   app:
     build: .
@@ -22,6 +24,13 @@ services:
       DATABASE_URL: postgresql://${FSTR_DB_LOGIN}:${FSTR_DB_PASS}@db:${FSTR_DB_PORT}/${FSTR_DB_NAME}
     ports:
       - "8010:8010"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
 
 volumes:
   postgres_data:
