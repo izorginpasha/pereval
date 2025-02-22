@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_USER: ${FSTR_DB_LOGIN}
+      POSTGRES_PASSWORD: ${FSTR_DB_PASS}
+      POSTGRES_DB: ${FSTR_DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${FSTR_DB_PORT}:5432"
+
+  app:
+    build: .
+    container_name: pereval
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://${FSTR_DB_LOGIN}:${FSTR_DB_PASS}@db:${FSTR_DB_PORT}/${FSTR_DB_NAME}
+    ports:
+      - "8010:8010"
+
+volumes:
+  postgres_data:

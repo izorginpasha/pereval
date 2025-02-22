@@ -1,8 +1,8 @@
 import uvicorn
-from src.core.config import uvicorn_options
+from core.config import uvicorn_options
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 from sqlalchemy import text
-from src.api import api_router
+from api import api_router
 from pydantic import ValidationError
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse

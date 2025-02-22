@@ -202,8 +202,7 @@ async def get_pereval_user_email(db: db_dependency, user__email: str) -> List[di
                     images=images
                 )
             )
-            print(response_data)
-            print([p.model_dump() for p in response_data])
+
             json_data = [p.model_dump(mode='json') for p in response_data]
 
         # Преобразуем Pydantic-объекты в JSON-совместимые словари
