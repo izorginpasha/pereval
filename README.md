@@ -71,10 +71,9 @@ docker ps
 - если провоить установку на хосте можно использовать готовыи образ
 для этого нужно изменить docker-compose-yaml и загрузить или создать вкорне проекта
 поместить внутрь фаила  
+### 📌 Docker Compose Конфигурация
 
-- 📌 Docker Compose Конфигурация
-
-
+```yaml
 services:  
   db:  
     image: postgres:15  
@@ -107,6 +106,7 @@ services:
 networks:  
   app_network:  
     driver: bridge 
+```
 
 далее выполнить предыдущии шаг, еще после создания контеинеров в контеинере db  
 выполнить сброс миграции   
@@ -123,39 +123,39 @@ alembic upgrade head
   'http://45.143.92.70:8010/submitData/6' \
   -H 'accept: application/json'
 #### Ответ:   
-{  
-  "id": 6,  
-  "date_added": "2025-02-23T09:49:03.600213",  
-  "beautyTitle": "string",  
-  "title": "string",  
-  "other_titles": "string",  
-  "connect": "string",  
-  "add_time": "2025-02-22T09:16:06.480000",  
-  "status": "new",  
-  "user": {  
-    "email": "user@example.com",  
-    "fam": "string",  
-    "name": "string",  
-    "otc": "string",  
-    "phone": "string"  
-  },  
-  "coords": {  
-    "latitude": 0,  
-    "longitude": 0,  
-    "height": 0  
-  },  
-  "level": {  
-    "level_winter": "string",  
-    "level_summer": "string",  
-    "level_autumn": "string",  
-    "level_spring": "string"  
-  },  
-  "images": [  
-    {  
-      "data": "https://s9.travelask.ru/uploads/post/000/028/766/main_image/facebook-3703d50448b0b279bd310d3d2ce9f03d.jpg"  
-    }  
-  ]  
-}  
+{
+  "id": 6,
+  "date_added": "2025-02-23T09:49:03.600213",
+  "beautyTitle": "string",
+  "title": "string",
+  "other_titles": "string",
+  "connect": "string",
+  "add_time": "2025-02-22T09:16:06.480000",
+  "status": "new",
+  "user": {
+    "email": "user@example.com",
+    "fam": "string",
+    "name": "string",
+    "otc": "string",
+    "phone": "string"
+  },
+  "coords": {
+    "latitude": 0,
+    "longitude": 0,
+    "height": 0
+  },
+  "level": {
+    "level_winter": "string",
+    "level_summer": "string",
+    "level_autumn": "string",
+    "level_spring": "string"
+  },
+  "images": [
+    {
+      "data": "https://s9.travelask.ru/uploads/post/000/028/766/main_image/facebook-3703d50448b0b279bd310d3d2ce9f03d.jpg"
+    }
+  ]
+}
 данныи запрос позволяет получить информацию о перевале по его id  
 
 #### Виды запросов
