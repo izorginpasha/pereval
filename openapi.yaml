@@ -1,0 +1,377 @@
+components:
+  schemas:
+    Coord:
+      properties:
+        height:
+          title: Height
+          type: integer
+        latitude:
+          title: Latitude
+          type: number
+        longitude:
+          title: Longitude
+          type: number
+      required:
+      - latitude
+      - longitude
+      - height
+      title: Coord
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    Image:
+      properties:
+        data:
+          title: Data
+          type: string
+      required:
+      - data
+      title: Image
+      type: object
+    Level:
+      properties:
+        level_autumn:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level Autumn
+        level_spring:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level Spring
+        level_summer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level Summer
+        level_winter:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level Winter
+      title: Level
+      type: object
+    PerevalCreate:
+      properties:
+        add_time:
+          format: date-time
+          title: Add Time
+          type: string
+        beauty_title:
+          title: Beauty Title
+          type: string
+        connect:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Connect
+        coords:
+          $ref: '#/components/schemas/Coord'
+        images:
+          items:
+            $ref: '#/components/schemas/Image'
+          title: Images
+          type: array
+        level:
+          $ref: '#/components/schemas/Level'
+        other_titles:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Other Titles
+        title:
+          title: Title
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - beauty_title
+      - title
+      - add_time
+      - user
+      - coords
+      - level
+      - images
+      title: PerevalCreate
+      type: object
+    PerevalResponse:
+      properties:
+        add_time:
+          format: date-time
+          title: Add Time
+          type: string
+        beautyTitle:
+          title: Beautytitle
+          type: string
+        connect:
+          title: Connect
+          type: string
+        coords:
+          $ref: '#/components/schemas/Coord'
+        date_added:
+          format: date-time
+          title: Date Added
+          type: string
+        id:
+          title: Id
+          type: integer
+        images:
+          items:
+            $ref: '#/components/schemas/Image'
+          title: Images
+          type: array
+        level:
+          $ref: '#/components/schemas/Level'
+        other_titles:
+          title: Other Titles
+          type: string
+        status:
+          title: Status
+          type: string
+        title:
+          title: Title
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+      - id
+      - date_added
+      - beautyTitle
+      - title
+      - other_titles
+      - connect
+      - add_time
+      - status
+      - user
+      - coords
+      - level
+      - images
+      title: PerevalResponse
+      type: object
+    PerevalUpdate:
+      properties:
+        add_time:
+          format: date-time
+          title: Add Time
+          type: string
+        beauty_title:
+          title: Beauty Title
+          type: string
+        connect:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Connect
+        coords:
+          $ref: '#/components/schemas/Coord'
+        images:
+          items:
+            $ref: '#/components/schemas/Image'
+          title: Images
+          type: array
+        level:
+          $ref: '#/components/schemas/Level'
+        other_titles:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Other Titles
+        title:
+          title: Title
+          type: string
+      required:
+      - beauty_title
+      - title
+      - add_time
+      - coords
+      - level
+      - images
+      title: PerevalUpdate
+      type: object
+    ResponseMessage:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        status:
+          title: Status
+          type: integer
+      required:
+      - status
+      title: ResponseMessage
+      type: object
+    User:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+        fam:
+          title: Fam
+          type: string
+        name:
+          title: Name
+          type: string
+        otc:
+          title: Otc
+          type: string
+        phone:
+          title: Phone
+          type: string
+      required:
+      - email
+      - fam
+      - name
+      - otc
+      - phone
+      title: User
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  title: FastAPI
+  version: 0.1.0
+openapi: 3.1.0
+paths:
+  /submitData/:
+    get:
+      operationId: get_pereval_email_submitData__get
+      parameters:
+      - in: query
+        name: user__email
+        required: true
+        schema:
+          title: User  Email
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerevalResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Pereval Email
+      tags:
+      - submitData
+    post:
+      operationId: submit_data_submitData__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerevalCreate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Submit Data
+      tags:
+      - submitData
+  /submitData/{pereval_id}:
+    get:
+      operationId: read_pereval_submitData__pereval_id__get
+      parameters:
+      - in: path
+        name: pereval_id
+        required: true
+        schema:
+          title: Pereval Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerevalResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Read Pereval
+      tags:
+      - submitData
+    put:
+      description: Обновить существующий сниппет
+      operationId: update_existing_pereval_submitData__pereval_id__put
+      parameters:
+      - in: path
+        name: pereval_id
+        required: true
+        schema:
+          title: Pereval Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerevalUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseMessage'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update Existing Pereval
+      tags:
+      - submitData
