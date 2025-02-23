@@ -192,6 +192,6 @@ FastAPI отлично работает в связке с Uvicorn (асинхр
 
 ### Контакты
 
-Email: izorgin.pasha@yandex.ru
-GitHub: github.com/izorginpasha
-Приложение размещено по адресу http://45.143.92.70:8010
+Email: izorgin.pasha@yandex.ru  
+GitHub: github.com/izorginpasha  
+Приложение размещено по адресу http://45.143.92.70:8010  
