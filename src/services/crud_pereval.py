@@ -18,6 +18,7 @@ from fastapi.responses import JSONResponse
 # Функция создания перевала
 async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseMessage:
     try:
+
         # Создание объектов координат и уровней
         db_coords = Coords(**pereval.coords.dict())
         db_levels = PerevalLevels(**pereval.level.dict())
@@ -57,6 +58,14 @@ async def create_pereval(db: db_dependency, pereval: PerevalCreate) -> ResponseM
         await db.refresh(db_coords)
         await db.refresh(db_levels)
         await db.refresh(db_user)
+        # Добавление изображений, если они есть
+        if pereval.images:
+            for image in pereval.images:
+                db_image = PerevalImages(img=image.data, pereval_id=db_pereval.id)
+                db.add(db_image)  # Добавляем изображения в базу данных
+                # Выполнение всех операций в рамках одной транзакции
+
+        await db.commit()
 
         return ResponseMessage(status=200, message="Отправлено успешно", id=db_pereval.id)
 
@@ -100,7 +109,7 @@ async def get_pereval(db: db_dependency, pereval_id: int):
                     level_autumn=pereval.level.level_autumn if pereval.level.level_autumn else None,
                     level_spring=pereval.level.level_spring if pereval.level.level_spring else None
                 ),
-                images = [Image(data=img.img) for img in pereval.images if img.img]
+                images=[Image(data=img.img) for img in pereval.images if img.img]
 
             )
         else:

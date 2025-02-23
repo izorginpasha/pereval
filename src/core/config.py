@@ -14,7 +14,7 @@ load_dotenv()
 
 class AppSettings(BaseSettings):
     app_port: int = 8010
-    app_host: str = "0.0.0.0"
+    app_host: str = "localhost"
     reload: bool = True
     cpu_count: int | None = None
 
