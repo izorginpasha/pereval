@@ -14,6 +14,3 @@ venv/
 # Исключаем файлы гита
 .git
 .gitignore
-# Исключаем Docker-файлы, чтобы не копировать их внутрь контейнера
-Dockerfile
-docker-compose.yml
